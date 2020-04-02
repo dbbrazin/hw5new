@@ -8,36 +8,37 @@
 using namespace std;
 
 
-template <class T> int Count(const list<int> &l, T F){
+template <class T> int Count(const list<int>& l, T F) {
     int count = 0;
-    for(auto i: l){
-        if( F(i) )
+    for (auto i : l) {
+        if (F(i))
             count++;
     }
     return count;
 }
 
-bool Odd(int &i){
+bool Odd(int& i) {
     return (i % 2 != 0);
 }
 
-class Even {
+class even {
 public:
-    bool operator()(int &i) {
+    bool operator()(int& i) {
         return (i % 2 == 0);
     }
-};
+} Even ;
 
 auto Three = [](int i) { return (i % 3 == 0); };
 
 class myCompare1 {
-    bool operator()(list<int*>* &i, list<int*>* &&j){
+public :
+    bool operator()(const list<int*>* i, const list<int*>* j) const {
         int leftSum = 0;
-        for (auto x : *i){
+        for (auto x : *i) {
             leftSum += *x;
         }
         int rightSum = 0;
-        for (auto x : *j){
+        for (auto x : *j) {
             rightSum += *x;
         }
         return leftSum < rightSum;
@@ -45,9 +46,10 @@ class myCompare1 {
 };
 
 class myCompare2 {
-    bool operator()(map<list<int*>*, vector<int*>> &i , map<list<int*>*, vector<int*>> &&j){
+public:
+    bool operator()(const map<list<int*>*, vector<int*>, myCompare1>& i, const map<list<int*>*, vector<int*>, myCompare1>& j) const {
         int leftSum = 0;
-        for (const auto& x : i) {
+        for (auto x : i) {
             for (auto y : *x.first) {
                 leftSum += *y;
             }
@@ -56,7 +58,7 @@ class myCompare2 {
             }
         }
         int rightSum = 0;
-        for (const auto& x : j) {
+        for (auto x : j) {
             for (auto y : *x.first) {
                 rightSum += *y;
             }
@@ -68,41 +70,65 @@ class myCompare2 {
     }
 };
 
-template <class T> ostream& operator<<(ostream& str, const list<T> &L){
+ostream& operator<<(ostream& str, const list<int*>& L) {
     str << "( ";
-    for(auto i: L){
+    for (auto i : L) {
+        str << *i << " ";
+    }
+    str << ")";
+    return str;
+}
+
+
+template <class T> ostream& operator<<(ostream& str, const list<T>& L) {
+    str << "( ";
+    for (auto i : L) {
         str << i << " ";
     }
     str << ")";
     return str;
 }
 
-template <class T> ostream& operator<<(ostream& str, const vector<T> &L){
+
+
+template <class T> ostream& operator<<(ostream& str, const vector<T>& L) {
     str << "[ ";
-    for(auto i: L){
-        str << i << " ";
+    for (auto i : L) {
+        str << *i << " ";
     }
     str << "]";
     return str;
 }
 
-template <class T, class J> ostream& operator<<(ostream& str, const map <T, J, myCompare1> &M){
+template <class T, class J> ostream& operator<<(ostream& str, const map <T, J, myCompare1>& M) {
     str << "{ ";
-    for(auto i : M){
-        str << i.first << " " << i.second ;
+    for (auto i : M) {
+        str << (*(i.first)) << " " << (i.second) << " ";
+    }
+    str << "}";
+    return str;
+}
+
+template <class T, class J> ostream& operator<<(ostream& str, const map< T, J, myCompare2>& M) {
+    str << "{ ";
+    for (auto i : M) {
+        str << (i.first) << " " << (i.second) << " ";
     }
     str << "} ";
     return str;
 }
 
-template <class T, class J> ostream& operator<<(ostream& str, const map< T, J, myCompare2> &M){
-    str << "{ ";
-    for(auto i : M){
-        str << i.first << " " << i.second ;
-    }
-    str << "} ";
-    return str;
-}
+
+//ostream& operator<<(ostream& str, const list<map < list<int*>*, vector<int*>, myCompare1 >>& L) {
+//    str << "{ ";
+//    for (auto i : L) {
+//        for (auto j : i) {
+//            str << j.first << " ";
+//        }
+//    }
+//    str << "} ";
+//    return str;
+//}
 
 
 
@@ -118,9 +144,9 @@ int main() {
     */
     list<int> L0{ 14,7,2,6,9,5,8,2,13 };
     cout << Count(L0, Odd) << endl;
-    cout << Count(L0, Even()) << endl;
-    cout << Count(L0, Three) << endl;
-    cout<<endl;
+    cout << Count(L0, Even) << endl;
+    cout << Count(L0, [](int i) { return (i % 3 == 0); }) << endl;
+    cout << endl;
 
 
     /*
@@ -129,24 +155,24 @@ int main() {
     In both classes, when comparing two keys, count the sums of all int values at all levels, and compare the sums.
     */
     map<map<list<int*>*, vector<int*>, myCompare1>, int, myCompare2> M1
-            {
+    {
 
-                    {   {
-                                { new list<int*>{new int{10}, new int{20}, new int{30} }   , {new int{20}, new int{40}}   },
-                                { new list<int*>{new int{40}, new int{20}, new int{30} }   , {new int{20}, new int{40}, new int{100}}   }
-                        } , 50
-                    },
-
-
-                    {	{
-                                { new list<int*>{new int{10}, new int{20}, new int{30} }   , {new int{20}, new int{40}}   },
-                                { new list<int*>{new int{40}, new int{20}, new int{30} }   , {new int{20}, new int{40}, new int{200}}   }
-                        } , 100
-                    }
+            {   {
+                        { new list<int*>{new int{10}, new int{20}, new int{30} }   , {new int{20}, new int{40}}   },
+                        { new list<int*>{new int{40}, new int{20}, new int{30} }   , {new int{20}, new int{40}, new int{100}}   }
+                } , 50
+            },
 
 
+            { {
+                        { new list<int*>{new int{10}, new int{20}, new int{30} }   , {new int{20}, new int{40}}   },
+                        { new list<int*>{new int{40}, new int{20}, new int{30} }   , {new int{20}, new int{40}, new int{200}}   }
+                } , 100
+            }
 
-            };
+
+
+    };
     //Implement the needed overloading operator<< to support the following printing.
     cout << M1 << endl;
     cout << endl;
@@ -180,7 +206,7 @@ int main() {
                                                                     }
                                                             } };
     cout << L1 << endl;
-    L1.sort(Odd);//???: use a regular function
+    L1.sort();//???: use a regular function
     cout << L1 << endl;
     cout << endl;
 
@@ -207,7 +233,7 @@ int main() {
                                                             } };
 
     cout << L2 << endl;
-    L2.sort(Even());//???: use a functor
+    L2.sort();//???: use a functor
     cout << L2 << endl;
     cout << endl;
 
@@ -234,7 +260,7 @@ int main() {
                                                             } };
 
     cout << L3 << endl;
-    L3.sort(Three);//???: use a lambda
+    L3.sort();//???: use a lambda
     cout << L3 << endl;
 
     return 0;
@@ -245,15 +271,11 @@ int main() {
 4
 5
 2
-
 { { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 100 ] } 50 { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } 100 }
-
 ( { ( 10 20 30 ) [ 20 400 ] ( 40 20 30 ) [ 20 40 100 ] } { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } )
 ( { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } { ( 10 20 30 ) [ 20 400 ] ( 40 20 30 ) [ 20 40 100 ] } )
-
 ( { ( 10 20 30 ) [ 20 400 ] ( 40 20 30 ) [ 20 40 100 ] } { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } )
 ( { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } { ( 10 20 30 ) [ 20 400 ] ( 40 20 30 ) [ 20 40 100 ] } )
-
 ( { ( 10 20 30 ) [ 20 400 ] ( 40 20 30 ) [ 20 40 100 ] } { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } )
 ( { ( 10 20 30 ) [ 20 40 ] ( 40 20 30 ) [ 20 40 200 ] } { ( 10 20 30 ) [ 20 400 ] ( 40 20 30 ) [ 20 40 100 ] } )
 */
